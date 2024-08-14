@@ -1,0 +1,36 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {
+      "FlashCards.Dtos/1.0.0": {
+        "dependencies": {
+          "FlashCards.Models": "1.0.0"
+        },
+        "runtime": {
+          "FlashCards.Dtos.dll": {}
+        }
+      },
+      "FlashCards.Models/1.0.0": {
+        "runtime": {
+          "FlashCards.Models.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "FlashCards.Dtos/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "FlashCards.Models/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

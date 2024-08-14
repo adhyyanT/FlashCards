@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Dtos\FlashCards.Dtos.csproj" />
+    <ProjectReference Include="..\FlashCards.Api.Models\FlashCards.Models.csproj" />
+    <ProjectReference Include="..\FlashCards\FlashCards.Api.csproj" />
+  </ItemGroup>
+
+</Project>

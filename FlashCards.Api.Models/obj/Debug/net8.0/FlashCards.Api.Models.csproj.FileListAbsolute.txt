@@ -1,0 +1,11 @@
+D:\code\dotnet\FlashCards\FlashCards.Api.Models\bin\Debug\net8.0\FlashCards.Api.Models.deps.json
+D:\code\dotnet\FlashCards\FlashCards.Api.Models\bin\Debug\net8.0\FlashCards.Api.Models.dll
+D:\code\dotnet\FlashCards\FlashCards.Api.Models\bin\Debug\net8.0\FlashCards.Api.Models.pdb
+D:\code\dotnet\FlashCards\FlashCards.Api.Models\obj\Debug\net8.0\FlashCards.Api.Models.GeneratedMSBuildEditorConfig.editorconfig
+D:\code\dotnet\FlashCards\FlashCards.Api.Models\obj\Debug\net8.0\FlashCards.Api.Models.AssemblyInfoInputs.cache
+D:\code\dotnet\FlashCards\FlashCards.Api.Models\obj\Debug\net8.0\FlashCards.Api.Models.AssemblyInfo.cs
+D:\code\dotnet\FlashCards\FlashCards.Api.Models\obj\Debug\net8.0\FlashCards.Api.Models.csproj.CoreCompileInputs.cache
+D:\code\dotnet\FlashCards\FlashCards.Api.Models\obj\Debug\net8.0\FlashCards.Api.Models.dll
+D:\code\dotnet\FlashCards\FlashCards.Api.Models\obj\Debug\net8.0\refint\FlashCards.Api.Models.dll
+D:\code\dotnet\FlashCards\FlashCards.Api.Models\obj\Debug\net8.0\FlashCards.Api.Models.pdb
+D:\code\dotnet\FlashCards\FlashCards.Api.Models\obj\Debug\net8.0\ref\FlashCards.Api.Models.dll
