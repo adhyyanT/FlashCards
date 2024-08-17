@@ -8,11 +8,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace FlashCards.Migrations
+namespace FlashCards.Api.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    [Migration("20240809142225_UpdateName")]
-    partial class UpdateName
+    [Migration("20240817172506_RebuildDB")]
+    partial class RebuildDB
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -22,53 +22,14 @@ namespace FlashCards.Migrations
                 .HasAnnotation("ProductVersion", "8.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
-            modelBuilder.Entity("FlashCards.Api.Models.AppUser", b =>
-                {
-                    b.Property<string>("Email")
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<int>("Age")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Avatar")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("varchar(20)");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("varchar(20)");
-
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("varchar(20)");
-
-                    b.Property<DateTime>("UpdatedOn")
-                        .HasColumnType("datetime(6)");
-
-                    b.HasKey("Email");
-
-                    b.ToTable("AppUsers");
-                });
-
             modelBuilder.Entity("FlashCards.Api.Models.WordPack", b =>
                 {
                     b.Property<int>("WordPackId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<string>("AppUserEmail")
-                        .IsRequired()
-                        .HasColumnType("varchar(255)");
+                    b.Property<int>("AppUserId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime(6)");
@@ -85,12 +46,64 @@ namespace FlashCards.Migrations
 
                     b.HasKey("WordPackId");
 
-                    b.HasIndex("AppUserEmail");
+                    b.HasIndex("AppUserId");
 
                     b.ToTable("WordPacks");
                 });
 
-            modelBuilder.Entity("FlashCards.Api.Models.WordPackDetail", b =>
+            modelBuilder.Entity("FlashCards.Models.Models.AppUser", b =>
+                {
+                    b.Property<int>("AppUserId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("Age")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Avatar")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)");
+
+                    b.Property<int>("Gender")
+                        .HasColumnType("int");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)");
+
+                    b.Property<byte[]>("Password")
+                        .IsRequired()
+                        .HasColumnType("longblob");
+
+                    b.Property<byte[]>("Salt")
+                        .IsRequired()
+                        .HasColumnType("longblob");
+
+                    b.Property<DateTime>("UpdatedOn")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("AppUserId");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.ToTable("AppUsers");
+                });
+
+            modelBuilder.Entity("FlashCards.Models.Models.WordPackDetail", b =>
                 {
                     b.Property<int>("WordId")
                         .ValueGeneratedOnAdd()
@@ -129,16 +142,16 @@ namespace FlashCards.Migrations
 
             modelBuilder.Entity("FlashCards.Api.Models.WordPack", b =>
                 {
-                    b.HasOne("FlashCards.Api.Models.AppUser", "AppUser")
+                    b.HasOne("FlashCards.Models.Models.AppUser", "AppUser")
                         .WithMany("WordPacks")
-                        .HasForeignKey("AppUserEmail")
+                        .HasForeignKey("AppUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("AppUser");
                 });
 
-            modelBuilder.Entity("FlashCards.Api.Models.WordPackDetail", b =>
+            modelBuilder.Entity("FlashCards.Models.Models.WordPackDetail", b =>
                 {
                     b.HasOne("FlashCards.Api.Models.WordPack", "WordPack")
                         .WithMany("WordPackDetails")
@@ -149,14 +162,14 @@ namespace FlashCards.Migrations
                     b.Navigation("WordPack");
                 });
 
-            modelBuilder.Entity("FlashCards.Api.Models.AppUser", b =>
-                {
-                    b.Navigation("WordPacks");
-                });
-
             modelBuilder.Entity("FlashCards.Api.Models.WordPack", b =>
                 {
                     b.Navigation("WordPackDetails");
+                });
+
+            modelBuilder.Entity("FlashCards.Models.Models.AppUser", b =>
+                {
+                    b.Navigation("WordPacks");
                 });
 #pragma warning restore 612, 618
         }

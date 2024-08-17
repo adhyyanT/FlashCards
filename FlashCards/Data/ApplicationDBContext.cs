@@ -11,11 +11,12 @@ namespace FlashCards.Database
         {
             
         }
-        //protected override void OnModelCreating(ModelBuilder modelBuilder)
-        //{
-        //    modelBuilder.Entity<WordPack>()
-        //        .HasKey(b => b.WordPackId.Id);
-        //}
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<AppUser>()
+                .HasIndex(a => a.Email)
+                .IsUnique(true);
+        }
 
         public DbSet<WordPack> WordPacks{ get; set; }
         public DbSet<AppUser> AppUsers{ get; set; }

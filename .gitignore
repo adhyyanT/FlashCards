@@ -1,3 +1,4 @@
 /.vs
 /FlashCards/appsettings.json
 /FlashCards/AppSettings.cs
+/FlashCards.Core/appsettings.json

@@ -1,16 +1,15 @@
 ﻿using Dtos.Auth;
 using FlashCards.Api.Repositories;
 using FlashCards.Dtos.Auth;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using FlashCards.Dtos.Mappers;
-using System.Security.Cryptography;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using FlashCards.Api.Core.Services;
 
 namespace FlashCards.Api.Controllers
 {
@@ -20,10 +19,13 @@ namespace FlashCards.Api.Controllers
     {
         private readonly AppSettings _appSettings;
         private readonly IAppUserRepo _userRepo;
-        public AuthController(IAppUserRepo repo,IOptions<AppSettings> appSettings)
+        private readonly IAuthService _authService;
+
+        public AuthController(IAppUserRepo repo,IOptions<AppSettings> appSettings,IAuthService authService)
         {
             _appSettings = appSettings.Value;
             _userRepo = repo;
+            _authService = authService;
         }
 
         [HttpPost("login")]
@@ -37,30 +39,24 @@ namespace FlashCards.Api.Controllers
                 {
                     return BadRequest($"Incorrect username or password");
                 }
-                var isMatch = false;
-                using (HMACSHA256 hmac = new(user.Salt))
-                {
-                    var compute = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(userRequest.Password));
-                    isMatch = compute.SequenceEqual(user.Password);
-                }
+                var isMatch = _authService.IsPasswordEqual(user.Password,userRequest.Password,user.Salt);
                 if (!isMatch)
                 {
                     return BadRequest($"Incorrect username or password");
                 }
-                var tokenHandler = new JwtSecurityTokenHandler();
-                Console.WriteLine(_appSettings.Secret);
                 var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
-                var tokenDescriptor = new SecurityTokenDescriptor
-                {
-                    Subject = new ClaimsIdentity(new[] { new Claim("id", user.Email) }),
-                    Expires = DateTime.UtcNow.AddDays(7),
-                    SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),SecurityAlgorithms.HmacSha256Signature)
-                };
-                var token = tokenHandler.CreateToken(tokenDescriptor);
-                var encrypterToken = tokenHandler.WriteToken(token);
-                Console.WriteLine(encrypterToken);
+                
                 var res = user.ToLoginResponse();
-                res.Jwt = encrypterToken;
+                res.Jwt = _authService.GetJwtToken(key,user.Email,user.AppUserId);
+                HttpContext.Response.Cookies.Append(_appSettings.TokenName, res.Jwt, new CookieOptions
+                {
+                    Expires = DateTime.Now.AddDays(7),
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = SameSiteMode.None,
+                    IsEssential = true
+                });
+
                 return Ok(res);
             }
             catch(Exception e)
@@ -86,20 +82,16 @@ namespace FlashCards.Api.Controllers
                     return BadRequest($"A user already exist for {registerUserRequest.Email}");
                 }
                 var user = await _userRepo.CreateAppUser(registerUserRequest) ?? throw new Exception("Unable to create user");
-
-                return CreatedAtAction(nameof(Login), "" ,user.ToLoginResponse());
+                var userResp = user.ToLoginResponse();
+                var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
+                userResp.Jwt = _authService.GetJwtToken(key, userResp.Email,userResp.AppUserId);
+                return CreatedAtAction(nameof(Login), "" ,userResp);
             }
             catch(Exception e)
             {
                 Console.WriteLine(e.Message);
                 return StatusCode(500, e.Message);
             }
-        }
-        [Authorize]
-        [HttpGet("HelloWorld")]
-        public IActionResult HelloWorld()
-        {
-            return Ok("Hello world");
         }
     }
 }

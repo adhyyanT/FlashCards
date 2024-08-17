@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace FlashCards.Migrations
+namespace FlashCards.Api.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
     partial class ApplicationDBContextModelSnapshot : ModelSnapshot
@@ -25,9 +25,8 @@ namespace FlashCards.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<string>("AppUserEmail")
-                        .IsRequired()
-                        .HasColumnType("varchar(255)");
+                    b.Property<int>("AppUserId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime(6)");
@@ -44,15 +43,16 @@ namespace FlashCards.Migrations
 
                     b.HasKey("WordPackId");
 
-                    b.HasIndex("AppUserEmail");
+                    b.HasIndex("AppUserId");
 
                     b.ToTable("WordPacks");
                 });
 
             modelBuilder.Entity("FlashCards.Models.Models.AppUser", b =>
                 {
-                    b.Property<string>("Email")
-                        .HasColumnType("varchar(255)");
+                    b.Property<int>("AppUserId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
                     b.Property<int>("Age")
                         .HasColumnType("int");
@@ -63,6 +63,10 @@ namespace FlashCards.Migrations
 
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
@@ -88,7 +92,10 @@ namespace FlashCards.Migrations
                     b.Property<DateTime>("UpdatedOn")
                         .HasColumnType("datetime(6)");
 
-                    b.HasKey("Email");
+                    b.HasKey("AppUserId");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
 
                     b.ToTable("AppUsers");
                 });
@@ -134,7 +141,7 @@ namespace FlashCards.Migrations
                 {
                     b.HasOne("FlashCards.Models.Models.AppUser", "AppUser")
                         .WithMany("WordPacks")
-                        .HasForeignKey("AppUserEmail")
+                        .HasForeignKey("AppUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

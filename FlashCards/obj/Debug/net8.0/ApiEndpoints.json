@@ -1,0 +1,76 @@
+[
+  {
+    "ContainingType": "FlashCards.Api.Controllers.AuthController",
+    "Method": "Login",
+    "RelativePath": "api/auth/login",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userRequest",
+        "Type": "FlashCards.Dtos.Auth.LoginAppUserRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FlashCards.Api.Controllers.AuthController",
+    "Method": "Regsiter",
+    "RelativePath": "api/auth/register",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "registerUserRequest",
+        "Type": "Dtos.Auth.RegisterUserRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FlashCards.Api.Controllers.WordPackController",
+    "Method": "GetWordPackDetailsByPackId",
+    "RelativePath": "api/WordPack/{wordPackId}/words",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "wordPackId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FlashCards.Api.Controllers.WordPackController",
+    "Method": "CreateWordPack",
+    "RelativePath": "api/WordPack/create",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "wordPackReq",
+        "Type": "FlashCards.Dtos.WordPackDtos.WordPackCreateRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FlashCards.Api.Controllers.WordPackController",
+    "Method": "GetWordPacksByAppUserId",
+    "RelativePath": "api/WordPack/user",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  }
+]

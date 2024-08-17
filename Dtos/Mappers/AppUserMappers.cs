@@ -11,6 +11,7 @@ namespace FlashCards.Dtos.Mappers
         {
             return new LoginAppUserResponse()
             {
+                AppUserId = user.AppUserId,
                 Age = user.Age,
                 Avatar = user.Avatar,
                 Email = user.Email,

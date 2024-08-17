@@ -11,6 +11,8 @@ namespace FlashCards.Models.Models
 {
     public class AppUser
     {
+        [Key]
+        public int AppUserId { get; set; }
         [MaxLength(20)]
         public string FirstName { get; set; }
         [MaxLength(20)]
@@ -21,7 +23,7 @@ namespace FlashCards.Models.Models
         [Required]
         public byte[] Salt { get; set; }
 
-        [Key]
+        [Required]
         public string Email { get; set; }
         public Gender Gender { get; set; }
 

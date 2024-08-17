@@ -13,3 +13,4 @@ D:\code\dotnet\FlashCards\Dtos\obj\Debug\net8.0\FlashCards.Dtos.dll
 D:\code\dotnet\FlashCards\Dtos\obj\Debug\net8.0\refint\FlashCards.Dtos.dll
 D:\code\dotnet\FlashCards\Dtos\obj\Debug\net8.0\FlashCards.Dtos.pdb
 D:\code\dotnet\FlashCards\Dtos\obj\Debug\net8.0\ref\FlashCards.Dtos.dll
+D:\code\dotnet\FlashCards\Dtos\obj\Debug\net8.0\FlashCards.Dtos.sourcelink.json

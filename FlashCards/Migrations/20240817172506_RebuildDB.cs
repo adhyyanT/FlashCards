@@ -4,10 +4,10 @@ using MySql.EntityFrameworkCore.Metadata;
 
 #nullable disable
 
-namespace FlashCards.Migrations
+namespace FlashCards.Api.Migrations
 {
     /// <inheritdoc />
-    public partial class UserAndWordPackAndDetailsCreation : Migration
+    public partial class RebuildDB : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -19,10 +19,14 @@ namespace FlashCards.Migrations
                 name: "AppUsers",
                 columns: table => new
                 {
-                    Email = table.Column<string>(type: "varchar(255)", nullable: false),
+                    AppUserId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
                     FirstName = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false),
                     LastName = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false),
-                    Password = table.Column<string>(type: "varchar(20)", maxLength: 20, nullable: false),
+                    Password = table.Column<byte[]>(type: "longblob", nullable: false),
+                    Salt = table.Column<byte[]>(type: "longblob", nullable: false),
+                    Email = table.Column<string>(type: "varchar(255)", nullable: false),
+                    Gender = table.Column<int>(type: "int", nullable: false),
                     Age = table.Column<int>(type: "int", nullable: false),
                     Avatar = table.Column<string>(type: "longtext", nullable: false),
                     CreatedOn = table.Column<DateTime>(type: "datetime(6)", nullable: false),
@@ -30,7 +34,7 @@ namespace FlashCards.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AppUsers", x => x.Email);
+                    table.PrimaryKey("PK_AppUsers", x => x.AppUserId);
                 })
                 .Annotation("MySQL:Charset", "utf8mb4");
 
@@ -44,17 +48,17 @@ namespace FlashCards.Migrations
                     CreatedOn = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     UpdatedOn = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     IsPublic = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    Email = table.Column<string>(type: "longtext", nullable: false),
-                    AppUserEmail = table.Column<string>(type: "varchar(255)", nullable: true)
+                    AppUserId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_WordPacks", x => x.WordPackId);
                     table.ForeignKey(
-                        name: "FK_WordPacks_AppUsers_AppUserEmail",
-                        column: x => x.AppUserEmail,
+                        name: "FK_WordPacks_AppUsers_AppUserId",
+                        column: x => x.AppUserId,
                         principalTable: "AppUsers",
-                        principalColumn: "Email");
+                        principalColumn: "AppUserId",
+                        onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySQL:Charset", "utf8mb4");
 
@@ -85,14 +89,20 @@ namespace FlashCards.Migrations
                 .Annotation("MySQL:Charset", "utf8mb4");
 
             migrationBuilder.CreateIndex(
+                name: "IX_AppUsers_Email",
+                table: "AppUsers",
+                column: "Email",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_WordPackDetails_WordPackId",
                 table: "WordPackDetails",
                 column: "WordPackId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_WordPacks_AppUserEmail",
+                name: "IX_WordPacks_AppUserId",
                 table: "WordPacks",
-                column: "AppUserEmail");
+                column: "AppUserId");
         }
 
         /// <inheritdoc />

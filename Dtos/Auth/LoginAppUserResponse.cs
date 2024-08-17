@@ -10,12 +10,12 @@ namespace FlashCards.Dtos.Auth
 {
     public class LoginAppUserResponse
     {
-        [MaxLength(20)]
+
+        public int AppUserId { get; set; }
         public string FirstName { get; set; }
-        [MaxLength(20)]
+
         public string LastName { get; set; }
         
-        [Key]
         public string Email { get; set; }
         public Gender Gender { get; set; }
 

@@ -9,3 +9,4 @@ D:\code\dotnet\FlashCards\FlashCards.Api.Models\obj\Debug\net8.0\FlashCards.Mode
 D:\code\dotnet\FlashCards\FlashCards.Api.Models\obj\Debug\net8.0\refint\FlashCards.Models.dll
 D:\code\dotnet\FlashCards\FlashCards.Api.Models\obj\Debug\net8.0\FlashCards.Models.pdb
 D:\code\dotnet\FlashCards\FlashCards.Api.Models\obj\Debug\net8.0\ref\FlashCards.Models.dll
+D:\code\dotnet\FlashCards\FlashCards.Api.Models\obj\Debug\net8.0\FlashCards.Models.sourcelink.json

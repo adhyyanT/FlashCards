@@ -19,8 +19,8 @@ namespace FlashCards.Api.Models
 
         public List<WordPackDetail> WordPackDetails { get; set; } = [];
 
-        [ForeignKey(nameof(AppUser.Email))]
-        public string AppUserEmail { get; set; }
+        [ForeignKey(nameof(AppUser.AppUserId))]
+        public int AppUserId { get; set; }
         public AppUser AppUser { get; set; }
 
 
