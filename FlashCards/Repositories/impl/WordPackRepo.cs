@@ -3,6 +3,7 @@ using FlashCards.Api.Core;
 using FlashCards.Api.Core.Services;
 using FlashCards.Api.Models;
 using FlashCards.Database;
+using FlashCards.Dtos.WordPackDetailsDtos;
 using FlashCards.Dtos.WordPackDtos;
 using FlashCards.Models.Models;
 using Microsoft.EntityFrameworkCore;
@@ -91,6 +92,19 @@ namespace FlashCards.Api.Repositories.impl
             }
         }
 
+        public async Task<List<WordPack>> GetPublicWordPacksAsync()
+        {
+            try
+            {
+                var wordPacks = await _context.WordPacks.Where(p => p.IsPublic).ToListAsync();
+                return wordPacks;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            } 
+        }
 
         private string GenerateBulkInsertQuery(List<WordPackDetail> wordDetails, int wordPackId)
         {
@@ -103,5 +117,46 @@ namespace FlashCards.Api.Repositories.impl
                VALUES {string.Join(",", values)}";
         }
 
+        public async Task<WordPack> CloneWordPackAsync(int wordPackId)
+        {
+            try
+            {
+                var wordPack = await GetWordPackById(wordPackId);
+                if (!wordPack.IsPublic) throw new Exception("Cannot clone this word pack");
+                var nWordPack = new WordPack
+                {
+                    WordPackDetails = [],
+                    IsPublic = false,
+                    Name = wordPack.Name,
+                    AppUserId = _authService.GetId(),
+                    CreatedOn = DateTime.Now,
+                };
+
+                await _context.WordPacks.AddAsync(nWordPack);
+                await _context.SaveChangesAsync();
+                var bulkQuery = GenerateBulkInsertQuery(wordPack.WordPackDetails, nWordPack.WordPackId);
+                await _context.Database.ExecuteSqlRawAsync(bulkQuery);
+                return nWordPack;
+            } catch(Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+        public async Task<WordPack> GetWordPackById(int wordPackId)
+        {
+            try
+            {
+                var wordPack = await _context.WordPacks
+                    .Include(p => p.WordPackDetails)
+                    .FirstOrDefaultAsync(p => p.WordPackId == wordPackId)
+                    ?? throw new Exception($"Word pack with {wordPackId} does not exist.");
+                return wordPack;
+            }catch(Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
     }
 }

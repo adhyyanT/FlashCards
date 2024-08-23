@@ -49,6 +49,22 @@
   },
   {
     "ContainingType": "FlashCards.Api.Controllers.WordPackController",
+    "Method": "CloneWordPack",
+    "RelativePath": "api/WordPack/clone/{wordPackId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "wordPackId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FlashCards.Api.Controllers.WordPackController",
     "Method": "CreateWordPack",
     "RelativePath": "api/WordPack/create",
     "HttpMethod": "POST",
@@ -65,12 +81,38 @@
   },
   {
     "ContainingType": "FlashCards.Api.Controllers.WordPackController",
+    "Method": "GetPublicWordPacks",
+    "RelativePath": "api/WordPack/public",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FlashCards.Api.Controllers.WordPackController",
     "Method": "GetWordPacksByAppUserId",
     "RelativePath": "api/WordPack/user",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FlashCards.Api.Controllers.WordPackController",
+    "Method": "GetWordPackWithDetails",
+    "RelativePath": "api/WordPack/wordPack/{wordPackId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "wordPackId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
     "ReturnTypes": []
   }
 ]

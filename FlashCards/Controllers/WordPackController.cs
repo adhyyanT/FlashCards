@@ -32,6 +32,32 @@ namespace FlashCards.Api.Controllers
                 return StatusCode(500, e.Message);
             }
         }
+        [HttpGet("clone/{wordPackId}"),Authorize]
+        public async Task<IActionResult> CloneWordPack([FromRoute] int wordPackId)
+        {
+            try
+            {
+                var wordPacks = await _wordPackRepo.CloneWordPackAsync(wordPackId);
+                return Ok(wordPacks);
+            } catch(Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
+        [HttpGet("wordPack/{wordPackId}"),Authorize]
+        public async Task<IActionResult> GetWordPackWithDetails([FromRoute] int wordPackId)
+        {
+            try
+            {
+                var wordPack = await _wordPackRepo.GetWordPackById(wordPackId);
+                return Ok(wordPack.ToWordPackResponse());
+            } catch(Exception e)
+            {
+                return StatusCode(500, e.Message);
+
+            }
+        }
+
         [HttpGet("user"), Authorize]
         public async Task<IActionResult> GetWordPacksByAppUserId()
         {
@@ -47,7 +73,18 @@ namespace FlashCards.Api.Controllers
             }
         }
 
-        // Get public packs
+        [HttpGet("public")]
+        public async Task<IActionResult> GetPublicWordPacks()
+        {
+            try
+            {
+                var wordPacks = await _wordPackRepo.GetPublicWordPacksAsync();
+                return Ok(wordPacks.Select(p => p.ToWordPackResponse()).ToList());
+            } catch(Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
         // Delete endpoints
 
         [HttpGet("{wordPackId}/words"), Authorize]

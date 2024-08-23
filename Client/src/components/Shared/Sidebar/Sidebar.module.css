@@ -1,0 +1,65 @@
+.container {
+	transition: width 0.3s ease-in-out;
+	display: flex;
+	flex-direction: column;
+
+	@media screen and (max-width: 768px) {
+		display: none;
+	}
+}
+.smContainer {
+	display: none;
+	position: absolute;
+	bottom: 2rem;
+	right: 2rem;
+	border-radius: 50%;
+	background-color: hsl(var(--primary-foreground));
+	@media screen and (max-width: 768px) {
+		display: block;
+	}
+}
+
+.collapsed {
+	width: 6rem;
+	position: relative;
+}
+.expanded {
+	width: 15rem;
+}
+.sidebarBtnContainer {
+	padding-top: 2rem;
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+}
+.sidebarBtn {
+	display: flex !important;
+}
+.navigationBtn {
+	padding-top: 7rem;
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+	padding-left: 1rem;
+	padding-right: 1rem;
+	align-items: flex-start;
+}
+.toggleButton {
+	position: absolute;
+	right: 0;
+	transform: translate(50%, 200%);
+	border-radius: 50%;
+	background-color: hsl(var(--background));
+}
+.collapsedText {
+	opacity: 0;
+	visibility: hidden;
+	transition: all 0s;
+	width: 0;
+}
+.expandedText {
+	opacity: 1;
+	visibility: visible;
+	transition: all 0.6s;
+	width: fit-content;
+}
