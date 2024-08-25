@@ -31,38 +31,50 @@ namespace FlashCards.Api.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginAppUserRequest userRequest)
         {
+            var token = HttpContext.Request.Cookies.FirstOrDefault(c => c.Key == _appSettings.TokenName);
+            if(!string.IsNullOrEmpty(token.Key) && !string.IsNullOrEmpty(token.Value))
+            {
+                var claims = _authService.ValidateToken(token.Value);
+                if ( claims is not null)
+                {
+                    var email = _authService.GetEmail();
+                    if (!string.IsNullOrEmpty(email))
+                    {
+                        var user = await _userRepo.GetAppUserAsync(email);
+                        if (user is not null)
+                        {
+                            var resUser = user.ToLoginResponse();
+                            resUser.Jwt = token.Value;
+                            return Ok(resUser);
+                        }
+                    }
+                }
+            }
             if (!ModelState.IsValid) return BadRequest(ModelState);
             try
             {
                 var user = await _userRepo.GetAppUserAsync(userRequest.Email);
                 if(user is null)
                 {
-                    return BadRequest($"Incorrect username or password");
+                    return BadRequest(new {error = "Incorrect username or password" });
                 }
                 var isMatch = _authService.IsPasswordEqual(user.Password,userRequest.Password,user.Salt);
                 if (!isMatch)
                 {
-                    return BadRequest($"Incorrect username or password");
+                    return BadRequest(new { error = "Incorrect username or password" });
                 }
                 var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
                 
                 var res = user.ToLoginResponse();
                 res.Jwt = _authService.GetJwtToken(key,user.Email,user.AppUserId);
-                HttpContext.Response.Cookies.Append(_appSettings.TokenName, res.Jwt, new CookieOptions
-                {
-                    Expires = DateTime.Now.AddDays(7),
-                    HttpOnly = true,
-                    Secure = true,
-                    SameSite = SameSiteMode.None,
-                    IsEssential = true
-                });
+                _authService.SetToken(_appSettings.TokenName, res.Jwt);
 
                 return Ok(res);
             }
             catch(Exception e)
             {
-                Console.WriteLine(e.Message);
-                return StatusCode(500, e.Message);
+                Console.WriteLine(e);
+                return StatusCode(500, new { error = e.Message });
             }
         }
 
@@ -74,12 +86,16 @@ namespace FlashCards.Api.Controllers
                 if (!ModelState.IsValid) return BadRequest(ModelState);
                 if (registerUserRequest.ConfirmPassword != registerUserRequest.Password)
                 {
-                    return BadRequest("Confirm password does not match");
+                    /*
+                     * TODO: Implement error class to return standard errors to frontend
+                     */
+
+                    return BadRequest(new {errors = new {confirmPassword = "Confirm password does not match" } });
                 }
                 var opUser = await _userRepo.GetAppUserAsync(registerUserRequest.Email);
                 if (opUser is not null)
                 {
-                    return BadRequest($"A user already exist for {registerUserRequest.Email}");
+                    return BadRequest(new {error = new { email = $"A user already exist for {registerUserRequest.Email}" } });
                 }
                 var user = await _userRepo.CreateAppUser(registerUserRequest) ?? throw new Exception("Unable to create user");
                 var userResp = user.ToLoginResponse();
@@ -90,7 +106,7 @@ namespace FlashCards.Api.Controllers
             catch(Exception e)
             {
                 Console.WriteLine(e.Message);
-                return StatusCode(500, e.Message);
+                return StatusCode(500, new { error = e.Message });
             }
         }
     }

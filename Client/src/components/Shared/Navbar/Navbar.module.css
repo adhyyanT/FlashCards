@@ -1,8 +1,17 @@
 .container {
 	height: 2.75rem;
-	border: 1px solid black;
+	/* border: 1px solid black; */
 	display: flex;
 	justify-content: space-between;
 	padding: 0 2rem 0 2rem;
 	align-items: center;
+}
+.title {
+	text-transform: capitalize;
+	font-size: larger;
+}
+.signInBtn {
+	border: 1px solid white;
+	border-radius: 6px;
+	padding: 4px 6px 4px 6px;
 }

@@ -8,11 +8,26 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using FlashCards.Api.Core.Services;
 using FlashCards.Api.Core.Services.Impl;
+using Microsoft.Extensions.Options;
 
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+                      builder =>
+                      {
+                          //builder.AllowAnyOrigin()
+                          builder.WithOrigins("http://localhost:5173")
+                          .AllowAnyHeader()
+                          .AllowAnyMethod()
+                           .AllowCredentials();
+                      });
+});
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddControllers();
@@ -23,11 +38,12 @@ builder.Services.AddDbContext<ApplicationDBContext>(options =>
 {
     options.UseMySQL(builder.Configuration.GetConnectionString("Default") ?? throw new Exception("DataBase Connection string Not found."));
 });
-builder.Services.AddScoped<IAppUserRepo, AppUserRepo>();
+builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("ApplicationSettings"));
+builder.Services.AddSingleton(resolver => resolver.GetRequiredService<IOptions<AppSettings>>().Value);
 builder.Services.AddScoped<IAuthService,AuthService>();
+builder.Services.AddScoped<IAppUserRepo, AppUserRepo>();
 builder.Services.AddScoped<IWordPackRepo, WordPackRepo>();
 
-builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("ApplicationSettings"));
 //var jwtIssuer = builder.Configuration.GetSection("Jwt:Issuer").Get<string>();
 var jwtKey = builder.Configuration.GetSection("ApplicationSettings:Secret").Get<string>() ?? throw new Exception("Secret not found");
 var tokenName = builder.Configuration.GetSection("ApplicationSettings:TokenName").Get<string>() ?? throw new Exception("Token Name not found");
@@ -55,7 +71,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
      };
  });
 var app = builder.Build();
-
+app.UseCors(MyAllowSpecificOrigins);
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

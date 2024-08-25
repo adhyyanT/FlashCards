@@ -1,0 +1,9 @@
+.signInBtn {
+	border: 1px solid white;
+	border-radius: 6px;
+	padding: 4px 6px 4px 6px;
+}
+.dialogContainer {
+	width: 90% !important;
+	border-radius: 15px;
+}
