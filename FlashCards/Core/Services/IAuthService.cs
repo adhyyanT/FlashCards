@@ -11,5 +11,6 @@ namespace FlashCards.Api.Core.Services
         public void SetToken(string tokenName, string jwt);
 
         public ClaimsPrincipal? ValidateToken(string jwt);
+        public void ClearToken(string tokenName);
     }
 }

@@ -95,17 +95,31 @@ namespace FlashCards.Api.Controllers
                 var opUser = await _userRepo.GetAppUserAsync(registerUserRequest.Email);
                 if (opUser is not null)
                 {
-                    return BadRequest(new {error = new { email = $"A user already exist for {registerUserRequest.Email}" } });
+                    return Conflict(new {error = $"A user already exist for {registerUserRequest.Email}" });
                 }
                 var user = await _userRepo.CreateAppUser(registerUserRequest) ?? throw new Exception("Unable to create user");
                 var userResp = user.ToLoginResponse();
                 var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
                 userResp.Jwt = _authService.GetJwtToken(key, userResp.Email,userResp.AppUserId);
+                _authService.SetToken(_appSettings.TokenName, userResp.Jwt);
                 return CreatedAtAction(nameof(Login), "" ,userResp);
             }
             catch(Exception e)
             {
                 Console.WriteLine(e.Message);
+                return StatusCode(500, new { error = e.Message });
+            }
+        }
+        [HttpPost("logout"),Authorize]
+        public IActionResult Logout()
+        {
+            try
+            {
+                _authService.ClearToken(_appSettings.TokenName);
+                return NoContent();
+            }   
+            catch(Exception e)
+            {
                 return StatusCode(500, new { error = e.Message });
             }
         }

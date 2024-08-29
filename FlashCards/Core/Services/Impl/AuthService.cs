@@ -117,5 +117,11 @@ namespace FlashCards.Api.Core.Services.Impl
 
             return valid;
         }
+
+        public void ClearToken(string tokenName)
+        {
+            var context = _httpContextAccessor.HttpContext;
+            context?.Response.Cookies.Delete(tokenName);
+        }
     }
 }

@@ -3,7 +3,6 @@ import { useForm } from "react-hook-form";
 import { Button } from "../ui/button";
 
 import { login, register } from "@/api/AuthApis";
-import { hasError } from "@/utils/checkError";
 import { useMutation } from "@tanstack/react-query";
 import { z } from "zod";
 import {
@@ -25,15 +24,15 @@ import {
 	DialogTrigger,
 } from "@/components/ui/dialog";
 import { useAuth } from "@/context/AuthProvider";
+import { RegisterRequest } from "@/types/AuthTypes";
 import { Gender } from "@/types/gender";
 import { Zap } from "lucide-react";
 import { useEffect, useState } from "react";
 import { LoadingSpinner } from "../Shared/Spinner/LoadingSpinner";
 import styles from "./AuthDialog.module.css";
-import { RegisterRequest } from "@/types/AuthTypes";
 
 const loginFormSchema = z.object({
-	email: z.string().email(),
+	email: z.string().trim().toLowerCase().email(),
 	password: z.string().min(4),
 });
 
@@ -41,7 +40,7 @@ const registerFormSchema = z
 	.object({
 		firstName: z.string().trim().toLowerCase().min(1),
 		lastName: z.string().trim().toLowerCase().min(1),
-		email: z.string().email(),
+		email: z.string().trim().toLowerCase().email(),
 		password: z.string().min(4),
 		confirmPassword: z.string().min(4),
 	})
@@ -56,25 +55,24 @@ const registerFormSchema = z
 	});
 
 export const AuthDialog = () => {
+	const abort = new AbortController();
 	const auth = useAuth();
 	const [initialRender, setInitialRender] = useState(true);
 
-	// const queryClient = useQueryClient();
 	const loginMutation = useMutation({
 		mutationFn: (credentials: z.infer<typeof loginFormSchema>) => {
-			return login(credentials.email, credentials.password);
+			return login(credentials.email, credentials.password, abort);
 		},
 		onSuccess: (response) => {
-			const { data } = response;
-			if (!hasError(data)) {
+			if (response.status) {
 				auth.setUser({
 					isLoggedIn: true,
-					user: data,
+					user: response.data,
 				});
 			} else {
 				if (!initialRender) {
-					loginForm.setError("email", { message: data.error });
-					loginForm.setError("password", { message: data.error });
+					loginForm.setError("email", { message: response.data.error });
+					loginForm.setError("password", { message: response.data.error });
 				}
 			}
 			setInitialRender(false);
@@ -87,9 +85,15 @@ export const AuthDialog = () => {
 	const registerMutation = useMutation({
 		mutationFn: register,
 		onSuccess: (response) => {
-			const { data, res } = response;
-			if (res.status >= 400 && res.status < 500) {
-				console.log(data);
+			if (response.status) {
+				auth.setUser({
+					isLoggedIn: true,
+					user: response.data,
+				});
+			} else {
+				if (response.res.status === 409) {
+					registerForm.setError("email", { message: response.data.error });
+				}
 			}
 		},
 	});
@@ -117,13 +121,15 @@ export const AuthDialog = () => {
 		if (!auth.user && initialRender) {
 			loginMutation.mutate({ email: "local@local.com", password: "local" });
 		}
+		return () => {
+			abort.abort();
+		};
 	}, []);
 
 	const handleLogin = (form: z.infer<typeof loginFormSchema>) => {
 		loginMutation.mutate(form);
 	};
 	const handleRegister = (form: z.infer<typeof registerFormSchema>) => {
-		console.log(form);
 		registerMutation.mutate({
 			...form,
 			age: 0,
@@ -133,7 +139,11 @@ export const AuthDialog = () => {
 	};
 	return (
 		<Dialog>
-			<DialogTrigger className={styles.signInBtn}>Sign In</DialogTrigger>
+			<DialogTrigger asChild disabled={loginMutation.isPending}>
+				<Button variant={"outline"}>
+					Sign In {loginMutation.isPending && <LoadingSpinner />}
+				</Button>
+			</DialogTrigger>
 
 			<DialogContent className={styles.dialogContainer}>
 				<DialogTitle className="flex justify-center items-center gap-2">
@@ -190,7 +200,7 @@ export const AuthDialog = () => {
 										disabled={loginMutation.isPending}
 										type="submit"
 									>
-										Submit {loginMutation.isPending && <LoadingSpinner />}
+										Login {loginMutation.isPending && <LoadingSpinner />}
 									</Button>
 								</div>
 							</form>
@@ -281,7 +291,15 @@ export const AuthDialog = () => {
 										</FormItem>
 									)}
 								/>
-								<Button type="submit">Sign Up</Button>
+								<div className="flex justify-center">
+									<Button
+										type="submit"
+										className="w-full"
+										disabled={registerMutation.isPending}
+									>
+										Sign Up {registerMutation.isPending && <LoadingSpinner />}
+									</Button>
+								</div>
 							</form>
 						</Form>
 					</TabsContent>

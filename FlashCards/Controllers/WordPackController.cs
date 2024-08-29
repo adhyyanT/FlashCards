@@ -29,7 +29,10 @@ namespace FlashCards.Api.Controllers
             }
             catch(Exception e)
             {
-                return StatusCode(500, e.Message);
+                return StatusCode(500, new
+                {
+                    error = e.Message
+                });
             }
         }
         [HttpGet("clone/{wordPackId}"),Authorize]
@@ -41,7 +44,7 @@ namespace FlashCards.Api.Controllers
                 return Ok(wordPacks);
             } catch(Exception e)
             {
-                return StatusCode(500, e.Message);
+                return StatusCode(500, new { error = e.Message });
             }
         }
         [HttpGet("wordPack/{wordPackId}"),Authorize]
@@ -53,7 +56,7 @@ namespace FlashCards.Api.Controllers
                 return Ok(wordPack.ToWordPackResponse());
             } catch(Exception e)
             {
-                return StatusCode(500, e.Message);
+                return StatusCode(500, new { error = e.Message });
 
             }
         }
@@ -68,7 +71,7 @@ namespace FlashCards.Api.Controllers
                 return Ok(wordPacks.Select(p => p.ToWordPackResponse()).ToList());
             } catch(Exception e)
             {
-                return StatusCode(500, e.Message);
+                return StatusCode(500, new {error =  e.Message });
 
             }
         }
@@ -82,7 +85,7 @@ namespace FlashCards.Api.Controllers
                 return Ok(wordPacks.Select(p => p.ToWordPackResponse()).ToList());
             } catch(Exception e)
             {
-                return StatusCode(500, e.Message);
+                return StatusCode(500, new { error = e.Message });
             }
         }
         // Delete endpoints
@@ -97,7 +100,7 @@ namespace FlashCards.Api.Controllers
             } catch(Exception e)
             {
                 Console.WriteLine(e);
-                throw;
+                return StatusCode(500, new { error = e.Message });
             }
         }
     }

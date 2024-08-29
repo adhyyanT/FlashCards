@@ -2,8 +2,11 @@
 	border: 1px solid white;
 	border-radius: 6px;
 	padding: 4px 6px 4px 6px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 4px;
 }
 .dialogContainer {
 	width: 90% !important;
-	border-radius: 15px;
 }
