@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { Button } from "../ui/button";
 
 import { login, register } from "@/api/AuthApis";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 import {
 	Form,
@@ -60,6 +60,7 @@ export const AuthDialog = () => {
 	const [initialRender, setInitialRender] = useState(true);
 
 	const loginMutation = useMutation({
+		mutationKey: ["auth", "login"],
 		mutationFn: (credentials: z.infer<typeof loginFormSchema>) => {
 			return login(credentials.email, credentials.password, abort);
 		},
@@ -68,12 +69,18 @@ export const AuthDialog = () => {
 				auth.setUser({
 					isLoggedIn: true,
 					user: response.data,
+					isLoading: false,
 				});
 			} else {
 				if (!initialRender) {
 					loginForm.setError("email", { message: response.data.error });
 					loginForm.setError("password", { message: response.data.error });
 				}
+				auth.setUser({
+					isLoggedIn: false,
+					user: undefined,
+					isLoading: false,
+				});
 			}
 			setInitialRender(false);
 		},
@@ -89,11 +96,17 @@ export const AuthDialog = () => {
 				auth.setUser({
 					isLoggedIn: true,
 					user: response.data,
+					isLoading: false,
 				});
 			} else {
 				if (response.res.status === 409) {
 					registerForm.setError("email", { message: response.data.error });
 				}
+				auth.setUser({
+					isLoggedIn: false,
+					user: undefined,
+					isLoading: false,
+				});
 			}
 		},
 	});
@@ -119,6 +132,11 @@ export const AuthDialog = () => {
 
 	useEffect(() => {
 		if (!auth.user && initialRender) {
+			auth.setUser({
+				isLoading: true,
+				isLoggedIn: auth.isLoading,
+				user: auth.user,
+			});
 			loginMutation.mutate({ email: "local@local.com", password: "local" });
 		}
 		return () => {
@@ -127,9 +145,19 @@ export const AuthDialog = () => {
 	}, []);
 
 	const handleLogin = (form: z.infer<typeof loginFormSchema>) => {
+		auth.setUser({
+			isLoading: true,
+			isLoggedIn: auth.isLoading,
+			user: auth.user,
+		});
 		loginMutation.mutate(form);
 	};
 	const handleRegister = (form: z.infer<typeof registerFormSchema>) => {
+		auth.setUser({
+			isLoading: true,
+			isLoggedIn: auth.isLoading,
+			user: auth.user,
+		});
 		registerMutation.mutate({
 			...form,
 			age: 0,

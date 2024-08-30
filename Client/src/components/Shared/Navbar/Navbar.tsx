@@ -17,7 +17,7 @@ import { useMutation } from "@tanstack/react-query";
 import { logout } from "@/api/AuthApis";
 
 export default function Navbar() {
-	const user = useAuth();
+	const auth = useAuth();
 
 	const logOutMutation = useMutation({
 		mutationFn: logout,
@@ -25,11 +25,10 @@ export default function Navbar() {
 			console.log(e);
 		},
 		onSuccess: () => {
-			console.log("here");
-
-			user.setUser({
+			auth.setUser({
 				isLoggedIn: false,
 				user: undefined,
+				isLoading: false,
 			});
 		},
 	});
@@ -38,21 +37,26 @@ export default function Navbar() {
 	const [title, setTitle] = useState("");
 
 	const handleLogout = () => {
+		auth.setUser({
+			isLoggedIn: auth.isLoggedIn,
+			user: auth.user,
+			isLoading: true,
+		});
 		logOutMutation.mutate();
 	};
 
 	useEffect(() => {
 		const paths = location.pathname.split("/");
-		if (paths.length > 0) {
-			setTitle(paths[paths.length - 1]);
+		if (paths.length >= 1) {
+			setTitle(paths[1]);
 		}
-	}, []);
+	}, [location.pathname]);
 
 	return (
 		<div className={styles.container}>
 			<div className={styles.title}>{title}</div>
 			<div>
-				{user.isLoggedIn ? (
+				{auth.isLoggedIn ? (
 					<DropdownMenu>
 						<DropdownMenuTrigger>
 							<CircleUser size={30} />

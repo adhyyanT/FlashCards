@@ -1,5 +1,6 @@
 import Home from "@/components/Home/Home.tsx";
 import HomePageLayout from "@/components/Layout/HomePageLayout";
+import Quiz from "@/components/Quiz/Quiz";
 import { createBrowserRouter, Navigate, Outlet } from "react-router-dom";
 
 export const router = createBrowserRouter([
@@ -17,6 +18,14 @@ export const router = createBrowserRouter([
 				element: (
 					<HomePageLayout>
 						<Home />
+					</HomePageLayout>
+				),
+			},
+			{
+				path: "/practice/:wordPackId",
+				element: (
+					<HomePageLayout>
+						<Quiz />
 					</HomePageLayout>
 				),
 			},
