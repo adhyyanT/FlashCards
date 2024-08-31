@@ -1,0 +1,64 @@
+.homeHeader {
+	display: flex;
+	flex-direction: column;
+	padding: 0rem 2rem 0 2rem;
+	height: 100%;
+	gap: 3rem;
+	overflow-x: hidden;
+}
+.header {
+	position: sticky;
+	top: 0px;
+	background-color: hsl(var(--background));
+	padding-top: 1rem;
+	padding-bottom: 1rem;
+	display: flex;
+	justify-content: space-between;
+}
+.headerTitle {
+	font-size: x-large;
+	@media (max-width: 450px) {
+		font-size: large;
+	}
+}
+.contentArea {
+	display: flex;
+	flex-direction: column;
+	@media (min-width: 768px) {
+		padding-left: 1rem;
+	}
+}
+.form {
+	width: 50%;
+	@media (max-width: 768px) {
+		width: 100%;
+	}
+}
+.wordHeader {
+	background-color: hsl(220, 21%, 19%);
+	padding: 1rem;
+	border-radius: 10px 10px 0 0;
+	display: flex;
+	justify-content: space-between;
+}
+.wordContent {
+	padding: 1rem;
+	border-radius: 0 0 10px 10px;
+	background-color: hsl(220, 21%, 19%);
+	@media (max-width: 600px) {
+		flex-direction: column;
+	}
+}
+.addCard {
+	cursor: pointer;
+	padding: 1rem;
+	border-radius: 10px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background-color: hsl(220, 21%, 19%);
+	transition: transform 0.2s ease-in-out;
+}
+.addCard:hover {
+	transform: scale(1.03);
+}

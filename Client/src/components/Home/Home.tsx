@@ -4,9 +4,11 @@ import styles from "./Home.module.css";
 
 import { useQuery } from "@tanstack/react-query";
 import classNames from "classnames";
-import { BookOpenText } from "lucide-react";
+import { BookOpenText, Plus } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Page } from "../Shared/Page/Page";
+import { useEffect, useState } from "react";
+import { WordPack } from "@/types/wordPack";
 
 export default function Home() {
 	const title = "My Library";
@@ -22,6 +24,21 @@ export default function Home() {
 			return count < 0;
 		},
 	});
+
+	const [wordPacks, setWordPacks] = useState<WordPack[]>([]);
+
+	useEffect(() => {
+		if (data && data.status) {
+			const t = [...data.data];
+			t.unshift({
+				isPublic: false,
+				name: "Create Word Pack",
+				wordPackDetails: [],
+				wordPackId: -1,
+			});
+			setWordPacks(t);
+		}
+	}, [data]);
 
 	if (auth.isLoading) {
 		return <div>Loading</div>;
@@ -46,24 +63,30 @@ export default function Home() {
 			</Page>
 		);
 	}
-	const wordPacks = data.data;
 
 	return (
 		<Page icon={<BookOpenText size={30} />} title={title} className="gap-4">
-			{wordPacks.map((d) => {
+			{wordPacks.map((d, index) => {
 				return (
 					<Link
-						to={`/practice/${d.wordPackId}`}
+						to={`${index === 0 ? "/edit" : `/practice/${d.wordPackId}`}`}
 						relative="route"
 						key={d.wordPackId}
 						className={classNames(
 							styles.card,
-							styles[
-								`cardBackground${Math.floor(Math.random() * (totalColor + 1))}`
-							]
+							index !== 0 &&
+								styles[
+									`cardBackground${Math.floor(
+										Math.random() * (totalColor + 1)
+									)}`
+								],
+							index === 0 && styles.createCard
 						)}
 					>
-						{d.name}
+						<div className="flex flex-col items-center">
+							{index === 0 && <Plus size={32} />}{" "}
+							<span className="text-lg font-semibold">{d.name}</span>
+						</div>
 					</Link>
 				);
 			})}
