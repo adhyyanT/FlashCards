@@ -20,7 +20,8 @@ namespace FlashCards.Dtos.Mappers
                 IsPublic = wordPack.IsPublic,
                 Name = wordPack.Name,
                 WordPackDetails = wordPack.WordPackDetails.Select(d => d.ToWordPackDetailResp()).ToList(),
-                WordPackId = wordPack.WordPackId
+                WordPackId = wordPack.WordPackId,
+                User = wordPack.AppUser.Email
             };
         }
         public static WordPackDetailCreateResp ToWordPackDetailResp(this WordPackDetail wordPackDetail)

@@ -7,9 +7,11 @@ type AuthProviderState = {
 		user?: Auth;
 		isLoggedIn: boolean;
 		isLoading: boolean;
+		fetchUser: boolean;
 	}) => void;
 	isLoggedIn: boolean;
 	isLoading: boolean;
+	fetchUser: boolean;
 };
 
 type AuthProviderProps = {
@@ -20,6 +22,7 @@ const initialState: AuthProviderState = {
 	setUser: () => null,
 	isLoggedIn: false,
 	isLoading: false,
+	fetchUser: false,
 };
 
 const AuthProviderContext = createContext<AuthProviderState>(initialState);
@@ -29,17 +32,21 @@ const AuthProvider = ({ children, ...props }: AuthProviderProps) => {
 		user?: Auth;
 		isLoggedIn: boolean;
 		isLoading: boolean;
+		fetchUser: boolean;
 	}>({
 		isLoggedIn: false,
 		isLoading: false,
+		fetchUser: true,
 	});
 
 	const value: AuthProviderState = {
+		fetchUser: user.fetchUser,
 		user: user.user,
 		setUser: (val: {
 			user?: Auth;
 			isLoggedIn: boolean;
 			isLoading: boolean;
+			fetchUser: boolean;
 		}) => {
 			setUser(val);
 		},

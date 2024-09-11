@@ -35,7 +35,7 @@ namespace FlashCards.Api.Repositories.impl
                     CreatedOn = DateTime.Now,
                     IsPublic = wordPackReq.IsPublic,
                     WordPackDetails = [],
-                    AppUserId = appUserId
+                    AppUserId = appUserId,
                 };
                 await _context.WordPacks.AddAsync(word);
                 await _context.SaveChangesAsync();
@@ -50,9 +50,9 @@ namespace FlashCards.Api.Repositories.impl
                 }).ToList();
                 var query = GenerateBulkInsertQuery(wordDetails, word.WordPackId);
                 await _context.Database.ExecuteSqlRawAsync(query);
-
-                word.WordPackDetails = await GetWordPackDetailsByPackIdAsync(word.WordPackId);
-                return word;
+                var createdWordPack = await GetWordPackById(word.WordPackId);
+                
+                return createdWordPack;
 
             }
             catch(Exception e)
@@ -68,6 +68,7 @@ namespace FlashCards.Api.Repositories.impl
             {
                 var userId = _authService.GetId();
                 var packs = await _context.WordPacks
+                    .Include((p) => p.AppUser)
                     .Where(p => p.AppUserId == userId).ToListAsync();
                 return packs;
             }
@@ -82,7 +83,8 @@ namespace FlashCards.Api.Repositories.impl
         {
             try
             {
-                var wordPackDetails = await _context.WordPackDetails.Where(d => d.WordPackId == wordPackId).ToListAsync();
+                var wordPackDetails = await _context.WordPackDetails
+                    .Where(d => d.WordPackId == wordPackId).ToListAsync();
                 return wordPackDetails;
 
             } catch(Exception e)
@@ -96,7 +98,9 @@ namespace FlashCards.Api.Repositories.impl
         {
             try
             {
-                var wordPacks = await _context.WordPacks.Where(p => p.IsPublic).ToListAsync();
+                var wordPacks = await _context.WordPacks
+                    .Include((p)=>p.AppUser)
+                    .Where(p => p.IsPublic).ToListAsync();
                 return wordPacks;
             }
             catch (Exception e)
@@ -122,6 +126,7 @@ namespace FlashCards.Api.Repositories.impl
             try
             {
                 var wordPack = await GetWordPackById(wordPackId);
+
                 if (!wordPack.IsPublic) throw new Exception("Cannot clone this word pack");
                 var nWordPack = new WordPack
                 {
@@ -136,9 +141,11 @@ namespace FlashCards.Api.Repositories.impl
                 await _context.SaveChangesAsync();
                 var bulkQuery = GenerateBulkInsertQuery(wordPack.WordPackDetails, nWordPack.WordPackId);
                 await _context.Database.ExecuteSqlRawAsync(bulkQuery);
+                Console.WriteLine(nWordPack.ToString());
                 return nWordPack;
             } catch(Exception e)
             {
+                Console.WriteLine("_______________________");
                 Console.WriteLine(e);
                 throw;
             }
@@ -148,6 +155,7 @@ namespace FlashCards.Api.Repositories.impl
             try
             {
                 var wordPack = await _context.WordPacks
+                    .Include(w =>w.AppUser)
                     .Include(p => p.WordPackDetails)
                     .FirstOrDefaultAsync(p => p.WordPackId == wordPackId)
                     ?? throw new Exception($"Word pack with {wordPackId} does not exist.");

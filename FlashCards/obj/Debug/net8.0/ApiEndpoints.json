@@ -1,16 +1,6 @@
 [
   {
     "ContainingType": "FlashCards.Api.Controllers.AuthController",
-    "Method": "Logout",
-    "RelativePath": "api/auth",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "FlashCards.Api.Controllers.AuthController",
     "Method": "Login",
     "RelativePath": "api/auth/login",
     "HttpMethod": "POST",
@@ -23,6 +13,16 @@
         "IsRequired": true
       }
     ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "FlashCards.Api.Controllers.AuthController",
+    "Method": "Logout",
+    "RelativePath": "api/auth/logout",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
     "ReturnTypes": []
   },
   {
@@ -61,7 +61,7 @@
     "ContainingType": "FlashCards.Api.Controllers.WordPackController",
     "Method": "CloneWordPack",
     "RelativePath": "api/WordPack/clone/{wordPackId}",
-    "HttpMethod": "GET",
+    "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
     "Parameters": [

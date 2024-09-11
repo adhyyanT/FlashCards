@@ -1,4 +1,5 @@
 import EditWordPack from "@/components/EditWordPack/EditWordPack";
+import Explore from "@/components/Explore/Explore";
 import Home from "@/components/Home/Home.tsx";
 import HomePageLayout from "@/components/Layout/HomePageLayout";
 import Quiz from "@/components/Quiz/Quiz";
@@ -35,6 +36,14 @@ export const router = createBrowserRouter([
 				element: (
 					<HomePageLayout>
 						<EditWordPack />
+					</HomePageLayout>
+				),
+			},
+			{
+				path: "/explore",
+				element: (
+					<HomePageLayout>
+						<Explore />
 					</HomePageLayout>
 				),
 			},

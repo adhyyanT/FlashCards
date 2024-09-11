@@ -29,21 +29,23 @@ namespace FlashCards.Api.Controllers
             }
             catch(Exception e)
             {
+                Console.WriteLine(e);
                 return StatusCode(500, new
                 {
                     error = e.Message
                 });
             }
         }
-        [HttpGet("clone/{wordPackId}"),Authorize]
+        [HttpPost("clone/{wordPackId}"),Authorize]
         public async Task<IActionResult> CloneWordPack([FromRoute] int wordPackId)
         {
             try
             {
-                var wordPacks = await _wordPackRepo.CloneWordPackAsync(wordPackId);
-                return Ok(wordPacks);
+                var wordPack = await _wordPackRepo.CloneWordPackAsync(wordPackId);
+                return CreatedAtAction("CloneWordPack",wordPack.WordPackId);
             } catch(Exception e)
             {
+                Console.WriteLine(e);
                 return StatusCode(500, new { error = e.Message });
             }
         }
@@ -85,6 +87,7 @@ namespace FlashCards.Api.Controllers
                 return Ok(wordPacks.Select(p => p.ToWordPackResponse()).ToList());
             } catch(Exception e)
             {
+                Console.WriteLine(e);
                 return StatusCode(500, new { error = e.Message });
             }
         }

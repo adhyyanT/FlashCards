@@ -21,6 +21,7 @@ import {
 import { useState } from "react";
 import { Button } from "../../ui/button";
 import styles from "./Sidebar.module.css";
+import { Link } from "react-router-dom";
 
 export default function Sidebar() {
 	const [isExpanded, setIsExpanded] = useState(true);
@@ -29,14 +30,20 @@ export default function Sidebar() {
 		{
 			name: "Home",
 			icon: <House size={"30px"} />,
+			redirect: "/home",
+			id: 1,
 		},
 		{
 			name: "Explore",
 			icon: <Compass size={"30px"} />,
+			redirect: "/explore",
+			id: 2,
 		},
 		{
 			name: "Sign out",
 			icon: <LogOut size={"30px"} />,
+			redirect: "/home",
+			id: 3,
 		},
 	];
 
@@ -66,10 +73,19 @@ export default function Sidebar() {
 					<DrawerFooter className="flex flex-col gap-4">
 						{sidebarItems.map((item, index) => {
 							return (
-								<DrawerClose className="flex gap-6 justify-center" key={index}>
-									{item.icon}
-									{item.name}
-								</DrawerClose>
+								<Link
+									key={item.id}
+									className="flex gap-6 justify-center"
+									to={item.redirect}
+								>
+									<DrawerClose
+										className="flex gap-6 justify-center"
+										key={index}
+									>
+										{item.icon}
+										{item.name}
+									</DrawerClose>
+								</Link>
 							);
 						})}
 					</DrawerFooter>
@@ -107,21 +123,28 @@ export default function Sidebar() {
 						{sidebarItems.map((item, index) => {
 							return (
 								<div key={index} className="w-full">
-									<Button
-										variant={"ghost"}
-										className={`${styles.sidebarBtn} ${
-											isExpanded ? "gap-6" : "gap-0"
-										} py-8`}
-									>
-										<div>{item.icon}</div>
-										<p
+									<Link className="w-full" to={item.redirect}>
+										<Button
+											variant={"ghost"}
 											className={classNames(
-												isExpanded ? styles.expandedText : styles.collapsedText
+												`${styles.sidebarBtn} ${
+													isExpanded ? "gap-6" : "gap-0"
+												} py-8`,
+												"w-full flex justify-start"
 											)}
 										>
-											{item.name}
-										</p>
-									</Button>
+											<div>{item.icon}</div>
+											<p
+												className={classNames(
+													isExpanded
+														? styles.expandedText
+														: styles.collapsedText
+												)}
+											>
+												{item.name}
+											</p>
+										</Button>
+									</Link>
 								</div>
 							);
 						})}

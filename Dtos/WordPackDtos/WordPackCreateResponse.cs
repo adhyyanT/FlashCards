@@ -17,5 +17,6 @@ namespace FlashCards.Dtos.WordPackDtos
         public string Name { get; set; }
         public bool IsPublic { get; set; }
         public List<WordPackDetailCreateResp> WordPackDetails { get; set; } = [];
+        public string User { get; set; }
     }
 }

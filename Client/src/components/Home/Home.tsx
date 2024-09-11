@@ -35,6 +35,7 @@ export default function Home() {
 				name: "Create Word Pack",
 				wordPackDetails: [],
 				wordPackId: -1,
+				user: "",
 			});
 			setWordPacks(t);
 		}

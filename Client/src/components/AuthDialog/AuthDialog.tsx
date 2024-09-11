@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { Button } from "../ui/button";
 
 import { login, register } from "@/api/AuthApis";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { z } from "zod";
 import {
 	Form,
@@ -57,7 +57,7 @@ const registerFormSchema = z
 export const AuthDialog = () => {
 	const abort = new AbortController();
 	const auth = useAuth();
-	const [initialRender, setInitialRender] = useState(true);
+	// const [initialRender, setInitialRender] = useState(true);
 
 	const loginMutation = useMutation({
 		mutationKey: ["auth", "login"],
@@ -70,9 +70,10 @@ export const AuthDialog = () => {
 					isLoggedIn: true,
 					user: response.data,
 					isLoading: false,
+					fetchUser: auth.fetchUser,
 				});
 			} else {
-				if (!initialRender) {
+				if (!auth.fetchUser) {
 					loginForm.setError("email", { message: response.data.error });
 					loginForm.setError("password", { message: response.data.error });
 				}
@@ -80,9 +81,9 @@ export const AuthDialog = () => {
 					isLoggedIn: false,
 					user: undefined,
 					isLoading: false,
+					fetchUser: false,
 				});
 			}
-			setInitialRender(false);
 		},
 		onError: (e) => {
 			console.log(e);
@@ -97,6 +98,7 @@ export const AuthDialog = () => {
 					isLoggedIn: true,
 					user: response.data,
 					isLoading: false,
+					fetchUser: false,
 				});
 			} else {
 				if (response.res.status === 409) {
@@ -106,6 +108,7 @@ export const AuthDialog = () => {
 					isLoggedIn: false,
 					user: undefined,
 					isLoading: false,
+					fetchUser: false,
 				});
 			}
 		},
@@ -131,11 +134,12 @@ export const AuthDialog = () => {
 	});
 
 	useEffect(() => {
-		if (!auth.user && initialRender) {
+		if (!auth.user && auth.fetchUser) {
 			auth.setUser({
 				isLoading: true,
 				isLoggedIn: auth.isLoading,
 				user: auth.user,
+				fetchUser: true,
 			});
 			loginMutation.mutate({ email: "local@local.com", password: "local" });
 		}
@@ -149,6 +153,7 @@ export const AuthDialog = () => {
 			isLoading: true,
 			isLoggedIn: auth.isLoading,
 			user: auth.user,
+			fetchUser: auth.fetchUser,
 		});
 		loginMutation.mutate(form);
 	};
@@ -157,6 +162,7 @@ export const AuthDialog = () => {
 			isLoading: true,
 			isLoggedIn: auth.isLoading,
 			user: auth.user,
+			fetchUser: auth.fetchUser,
 		});
 		registerMutation.mutate({
 			...form,

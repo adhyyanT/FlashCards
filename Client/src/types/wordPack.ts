@@ -3,6 +3,7 @@ export type WordPack = {
 	name: string;
 	isPublic: boolean;
 	wordPackDetails: WordPackDetails[];
+	user: string;
 };
 export type WordPackDetails = {
 	wordId: number;
@@ -10,4 +11,15 @@ export type WordPackDetails = {
 	meaning: string;
 	image: string;
 	proficiency: number;
+};
+
+export type CreateWordPackReq = {
+	name: string;
+	isPublic: boolean;
+	wordPackDetails?: {
+		word: string;
+		meaning: string;
+		image?: string;
+		proficiency?: number;
+	}[];
 };

@@ -20,16 +20,39 @@ import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { Textarea } from "../ui/textarea";
 import styles from "./EditWordPack.module.css";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createWordPack } from "@/api/WordPackApis";
 
 const wordPackDetails = z.object({
-	word: z.string().min(2).max(15),
-	meaning: z.string().min(4).max(1000),
+	word: z
+		.string()
+		.min(2, {
+			message: "Word should have at least 2 characters",
+		})
+		.max(15, {
+			message: "Word should be under 15 characters",
+		}),
+	meaning: z
+		.string()
+		.min(4, {
+			message: "Meaning should have at least 4 characters",
+		})
+		.max(1000, {
+			message: "Meaning should be under 1000 characters",
+		}),
 	proficiency: z.number().optional(),
 	image: z.string().optional(),
 });
 
 const wordPackSchema = z.object({
-	name: z.string().min(4).max(15),
+	name: z
+		.string()
+		.min(4, {
+			message: "Title should have at least 4 characters.",
+		})
+		.max(35, {
+			message: "Title should have 35 characters.",
+		}),
 	isPublic: z.boolean().default(false),
 	wordPackDetails: z.array(wordPackDetails).optional(),
 });
@@ -37,6 +60,21 @@ const wordPackSchema = z.object({
 const EditWordPack = () => {
 	const auth = useAuth();
 	const navigate = useNavigate();
+
+	const queryClient = useQueryClient();
+
+	const createWordPackMutation = useMutation({
+		mutationFn: createWordPack,
+		onSuccess: () => {
+			navigate("/home");
+			queryClient.invalidateQueries({
+				queryKey: ["WordPack", "user"],
+			});
+		},
+		onError: (e) => {
+			console.log("err", e);
+		},
+	});
 
 	const wordPackForm = useForm<z.infer<typeof wordPackSchema>>({
 		resolver: zodResolver(wordPackSchema),
@@ -48,7 +86,7 @@ const EditWordPack = () => {
 	});
 
 	function onSubmit(values: z.infer<typeof wordPackSchema>) {
-		console.log(values);
+		createWordPackMutation.mutate(values);
 	}
 	const wordDetailFields = useFieldArray({
 		name: "wordPackDetails",
@@ -77,11 +115,7 @@ const EditWordPack = () => {
 					<Plus size={32} />
 					<span className={styles.headerTitle}>Create word pack</span>
 				</div>
-				<Button
-					disabled={!wordPackForm.formState.isValid}
-					form="wordPack"
-					type="submit"
-				>
+				<Button form="wordPack" type="submit">
 					Create
 				</Button>
 			</div>

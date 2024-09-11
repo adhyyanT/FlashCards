@@ -1,0 +1,147 @@
+.dialog {
+	border: none;
+	background-color: transparent !important;
+	width: 90% !important;
+	box-shadow: none !important;
+}
+.cardContainer {
+	min-height: 300px;
+	min-width: 300px;
+
+	border-radius: 10px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	animation: cardSpin 1s ease-in-out 1s;
+	transform-style: preserve-3d;
+}
+@keyframes cardSpin {
+	to {
+		transform: rotateY(360deg);
+	}
+}
+.dialogContainer {
+	perspective: 1000px;
+	display: flex;
+	gap: 2rem;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+}
+
+.btnContainer {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	width: 100%;
+	align-items: center;
+	justify-content: center;
+	text-wrap: stable;
+}
+.author {
+	max-width: 300px;
+	word-break: break-all;
+	height: 100%;
+}
+.dialogBtn {
+	width: 300px;
+	border-radius: 1000px;
+	padding: 1.5rem 0.35rem;
+	position: relative;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	overflow: hidden;
+	&::before {
+		content: "";
+		position: absolute;
+		width: 104%;
+		height: 650%;
+		background: var(--conic-gradient);
+		animation: spin 1s infinite linear;
+	}
+	&::after {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		content: "Add to library";
+		position: absolute;
+		width: 98%;
+		height: 85%;
+		background-color: hsl(var(--background));
+		border-radius: 1000px;
+	}
+}
+.closeBtn {
+	border-radius: 1000px;
+	padding: 0.5rem 0.35rem;
+}
+@keyframes spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+.cardBackground0 {
+	background-image: linear-gradient(
+		135deg,
+		hsl(197, 94%, 55%),
+		hsl(197, 100%, 48%)
+	);
+}
+.cardBackground1 {
+	background-image: linear-gradient(
+		135deg,
+		hsl(268, 47%, 59%),
+		hsl(267, 47%, 52%)
+	);
+}
+.cardBackground2 {
+	background-image: linear-gradient(
+		135deg,
+		hsl(171, 99%, 42%),
+		hsl(169, 100%, 40%)
+	);
+}
+.cardBackground3 {
+	background-image: linear-gradient(
+		135deg,
+		hsl(358, 86%, 70%),
+		hsl(358, 84%, 65%)
+	);
+}
+.cardBackground4 {
+	background-image: linear-gradient(
+		135deg,
+		hsl(130, 53%, 56%),
+		hsl(131, 56%, 50%)
+	);
+}
+.cardBackground5 {
+	background-image: linear-gradient(
+		135deg,
+		hsl(48, 84%, 57%),
+		hsl(49, 100%, 46%)
+	);
+}
+
+.cardBackground6 {
+	background-image: linear-gradient(
+		135deg,
+		hsl(225, 53%, 57%),
+		hsl(225, 52%, 50%)
+	);
+}
+.cardBackground7 {
+	background-image: linear-gradient(
+		135deg,
+		hsl(277, 69%, 71%),
+		hsl(277, 66%, 67%)
+	);
+}
+.cardBackground8 {
+	background-image: linear-gradient(
+		135deg,
+		hsl(318, 84%, 77%),
+		hsl(319, 86%, 74%)
+	);
+}
