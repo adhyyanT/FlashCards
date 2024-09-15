@@ -55,6 +55,97 @@ export const getWordDetails = async (wordPackId: number) => {
 		throw e;
 	}
 };
+export const getWordPackDetails = async (wordPackId: number) => {
+	try {
+		const url = `${
+			import.meta.env.VITE_BACKEND
+		}/WordPack/wordPack/${wordPackId}`;
+		const res = await fetch(url, {
+			method: "GET",
+			headers: {
+				"Content-type": "application/json",
+			},
+			credentials: "include",
+		});
+		const data = await res.json();
+		if (res.ok) {
+			return {
+				data: data as WordPack,
+				res: res,
+				status: true,
+			} satisfies NetResponse<WordPack>;
+		}
+		return {
+			data: data as Error,
+			res: res,
+			status: false,
+		} satisfies NetResponse<Error>;
+	} catch (e) {
+		throw e;
+	}
+};
+export const updateWordPack = async (
+	wordPack: CreateWordPackReq,
+	wordPackId: number
+) => {
+	try {
+		const url = `${
+			import.meta.env.VITE_BACKEND
+		}/WordPack/wordPack/${wordPackId}/edit`;
+		const res = await fetch(url, {
+			method: "PUT",
+			headers: {
+				"Content-type": "application/json",
+			},
+			credentials: "include",
+			body: JSON.stringify(wordPack),
+		});
+		const data = await res.json();
+		if (res.ok) {
+			return {
+				data: data as WordPack,
+				res: res,
+				status: true,
+			} satisfies NetResponse<WordPack>;
+		}
+		return {
+			data: data as Error,
+			res: res,
+			status: false,
+		} satisfies NetResponse<Error>;
+	} catch (e) {
+		throw e;
+	}
+};
+export const deleteWordPack = async (wordPackId: number) => {
+	try {
+		const url = `${
+			import.meta.env.VITE_BACKEND
+		}/WordPack/wordPack/${wordPackId}/delete`;
+		const res = await fetch(url, {
+			method: "DELETE",
+			headers: {
+				"Content-type": "application/json",
+			},
+			credentials: "include",
+		});
+		if (res.ok) {
+			return {
+				data: null,
+				res: res,
+				status: true,
+			} satisfies NetResponse<null>;
+		}
+		const data = await res.json();
+		return {
+			data: data as Error,
+			res: res,
+			status: false,
+		} satisfies NetResponse<Error>;
+	} catch (e) {
+		throw e;
+	}
+};
 export const createWordPack = async (wordPack: CreateWordPackReq) => {
 	try {
 		const url = `${import.meta.env.VITE_BACKEND}/WordPack/create`;

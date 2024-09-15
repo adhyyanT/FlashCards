@@ -29,6 +29,7 @@ export default function Navbar() {
 				isLoggedIn: false,
 				user: undefined,
 				isLoading: false,
+				fetchUser: false,
 			});
 		},
 	});
@@ -41,6 +42,7 @@ export default function Navbar() {
 			isLoggedIn: auth.isLoggedIn,
 			user: auth.user,
 			isLoading: true,
+			fetchUser: false,
 		});
 		logOutMutation.mutate();
 	};

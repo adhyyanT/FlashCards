@@ -1,28 +1,53 @@
-import { getWordDetails } from "@/api/WordPackApis";
+import { deleteWordPack, getWordPackDetails } from "@/api/WordPackApis";
 import { useAuth } from "@/context/AuthProvider";
 import { WordPackDetails } from "@/types/wordPack";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import classNames from "classnames";
-import { Check, CircleX, FlaskConical, Play, Shuffle } from "lucide-react";
+import {
+	Check,
+	CircleX,
+	FilePenLine,
+	FlaskConical,
+	Play,
+	Shuffle,
+	Trash,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Page } from "../Shared/Page/Page";
-import { Button } from "../ui/button";
-import styles from "./Quiz.module.css";
 import Card from "../Card/Card";
 import cardStyles from "../Card/Card.module.css";
+import { Button } from "../ui/button";
 import { Toggle } from "../ui/toggle";
+import styles from "./Quiz.module.css";
+import {
+	publicWordPackKey,
+	userWordPackKey,
+	wordPackDetailsKey,
+} from "@/utils/queryKeys";
+import {
+	Dialog,
+	DialogClose,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from "@/components/ui/dialog";
+import { LoadingSpinner } from "../Shared/Spinner/LoadingSpinner";
 
 const Quiz = () => {
 	const title = "Quiz";
 	const { wordPackId } = useParams();
 	const auth = useAuth();
 	const navigate = useNavigate();
+	const queryClient = useQueryClient();
+
 	const { data, isLoading } = useQuery({
-		queryKey: ["practice", wordPackId],
+		queryKey: wordPackDetailsKey(wordPackId),
 		queryFn: () => {
 			if (wordPackId) {
-				return getWordDetails(+wordPackId);
+				return getWordPackDetails(+wordPackId);
 			}
 		},
 		retry: (count) => {
@@ -30,6 +55,19 @@ const Quiz = () => {
 		},
 		enabled: auth.isLoggedIn,
 		staleTime: Infinity,
+	});
+	const deleteMutation = useMutation({
+		mutationFn: deleteWordPack,
+		onSettled: () => {
+			queryClient.invalidateQueries({
+				queryKey: userWordPackKey(),
+			});
+			if (data && data.status && data.data.isPublic)
+				queryClient.invalidateQueries({
+					queryKey: publicWordPackKey(),
+				});
+			navigate("/");
+		},
 	});
 	const [showFirst, setShowFirst] = useState(true);
 	const [wordDetails, setWordDetails] = useState<WordPackDetails[]>([]);
@@ -46,12 +84,12 @@ const Quiz = () => {
 	const card2FaceRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
-		if (!auth.isLoggedIn) {
+		if (!auth.isLoggedIn && !auth.isLoading) {
 			navigate("/home");
 			return;
 		}
 		if (data && data.status) {
-			setWordDetails([...data.data]);
+			setWordDetails([...data.data.wordPackDetails]);
 		}
 	}, [auth.user, data]);
 
@@ -76,7 +114,7 @@ const Quiz = () => {
 			}
 			setWordDetails(array);
 		} else {
-			setWordDetails([...data.data]);
+			setWordDetails([...data.data.wordPackDetails]);
 		}
 	};
 
@@ -115,74 +153,122 @@ const Quiz = () => {
 	};
 
 	return (
-		<Page
-			className={classNames(
-				"h-full flex justify-start items-center flex-col gap-4"
-			)}
-			icon={<FlaskConical size={30} />}
-			title={title}
-		>
-			{index < wordDetails.length || nextIndex < wordDetails.length ? (
-				<Card
-					card1FaceRef={card1FaceRef}
-					card1Ref={card1Ref}
-					card2FaceRef={card2FaceRef}
-					card2Ref={card2Ref}
-					index={index}
-					nextIndex={nextIndex}
-					showFirst={showFirst}
-					wordDetails={wordDetails}
-					startQuiz={startQuiz}
-				/>
-			) : (
-				<div className="h-full w-full justify-center items-center flex">
-					<p>All caught up</p>
+		<div className={styles.homeHeader}>
+			<div className="flex justify-between items-center">
+				<div className="flex gap-2 items-end">
+					<FlaskConical size={30} />
+					<span className="text-3xl ">{title}</span>
 				</div>
-			)}
-			{/* <span>
-				<p>Did you get that?</p>
-			</span> */}
-			{!startQuiz && (
-				<div className="flex justify-around w-full">
-					<Toggle
-						className="p-8"
-						variant={"outline"}
-						onClick={shuffleWordDetails}
-					>
-						<Shuffle size={32} />
-					</Toggle>
+				<div className="flex gap-3">
 					<Button
-						className="p-8"
+						onClick={() => navigate(`/edit/${wordPackId}`)}
+						className={classNames("flex gap-2", styles.editBtn)}
 						variant={"outline"}
-						onClick={() => setStartQuiz(true)}
-						size={"lg"}
 					>
-						<Play size={32} />
+						<span>Edit</span>
+						<FilePenLine />
 					</Button>
+					<Dialog>
+						<DialogTrigger asChild>
+							<Button
+								variant={"destructive"}
+								className={classNames("flex gap-2", styles.editBtn)}
+							>
+								Delete
+								<Trash />
+							</Button>
+						</DialogTrigger>
+						<DialogContent className={styles.dialogContainer}>
+							<DialogHeader className="gap-2">
+								<DialogTitle>Are you absolutely sure?</DialogTitle>
+								<DialogDescription>
+									When you delete a pack, all the words in it will also be
+									deleted.
+								</DialogDescription>
+							</DialogHeader>
+							<DialogFooter className="gap-3">
+								<DialogClose asChild>
+									<Button disabled={deleteMutation.isPending}>Close</Button>
+								</DialogClose>
+								<Button
+									variant={"destructive"}
+									onClick={() =>
+										deleteMutation.mutate(wordPackId ? +wordPackId : -1)
+									}
+									disabled={deleteMutation.isPending}
+								>
+									Delete {deleteMutation.isPending && <LoadingSpinner />}
+								</Button>
+							</DialogFooter>
+						</DialogContent>
+					</Dialog>
 				</div>
-			)}
-			{startQuiz &&
-				(index < wordDetails.length || nextIndex < wordDetails.length) && (
+			</div>
+			<div
+				className={classNames(
+					styles.contentArea,
+					"h-full flex justify-start items-center flex-col gap-4"
+				)}
+			>
+				{index < wordDetails.length || nextIndex < wordDetails.length ? (
+					<Card
+						card1FaceRef={card1FaceRef}
+						card1Ref={card1Ref}
+						card2FaceRef={card2FaceRef}
+						card2Ref={card2Ref}
+						index={index}
+						nextIndex={nextIndex}
+						showFirst={showFirst}
+						wordDetails={wordDetails}
+						startQuiz={startQuiz}
+					/>
+				) : (
+					<div className="h-full w-full justify-center items-center flex">
+						<p>All caught up</p>
+					</div>
+				)}
+				{!startQuiz && (
 					<div className="flex justify-around w-full">
-						<Button
-							onClick={() => handleNext(false)}
-							variant={"outline"}
+						<Toggle
 							className="p-8"
+							variant={"outline"}
+							onClick={shuffleWordDetails}
+						>
+							<Shuffle size={32} />
+						</Toggle>
+						<Button
+							className="p-8"
+							variant={"outline"}
+							onClick={() => setStartQuiz(true)}
 							size={"lg"}
 						>
-							<CircleX color="red" size={45} />
-						</Button>
-						<Button
-							onClick={() => handleNext(true)}
-							variant={"outline"}
-							className="p-8"
-							size={"lg"}
-						>
-							<Check color="green" size={45} />
+							<Play size={32} />
 						</Button>
 					</div>
 				)}
-		</Page>
+				{startQuiz &&
+					(index < wordDetails.length || nextIndex < wordDetails.length) && (
+						<div className="flex justify-around w-full">
+							<Button
+								onClick={() => handleNext(false)}
+								variant={"outline"}
+								className="p-8"
+								size={"lg"}
+							>
+								<CircleX color="red" size={45} />
+							</Button>
+							<Button
+								onClick={() => handleNext(true)}
+								variant={"outline"}
+								className="p-8"
+								size={"lg"}
+							>
+								<Check color="green" size={45} />
+							</Button>
+						</div>
+					)}
+			</div>
+		</div>
 	);
 };
 

@@ -9,14 +9,15 @@ import { Link } from "react-router-dom";
 import { Page } from "../Shared/Page/Page";
 import { useEffect, useState } from "react";
 import { WordPack } from "@/types/wordPack";
+import { userWordPackKey } from "@/utils/queryKeys";
 
 export default function Home() {
 	const title = "My Library";
 	const auth = useAuth();
 	const totalColor = 8;
 
-	const { data, isLoading } = useQuery({
-		queryKey: ["WordPack", "user"],
+	const { data, isLoading, isRefetching } = useQuery({
+		queryKey: userWordPackKey(),
 		queryFn: () => getUserWordPacks(),
 		enabled: auth.isLoggedIn,
 		staleTime: Infinity,
@@ -44,7 +45,7 @@ export default function Home() {
 	if (auth.isLoading) {
 		return <div>Loading</div>;
 	}
-	if (isLoading) {
+	if (isLoading || isRefetching) {
 		return <div>Loading your library</div>;
 	}
 

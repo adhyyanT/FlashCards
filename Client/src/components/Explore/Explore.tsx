@@ -6,13 +6,14 @@ import AddToWordPack from "../AddToWordPack/AddToWordPack";
 import { Page } from "../Shared/Page/Page";
 import { Dialog, DialogTrigger } from "../ui/dialog";
 import styles from "./Explore.module.css";
+import { publicWordPackKey } from "@/utils/queryKeys";
 
 const Explore = () => {
 	const title = "Explore";
 	const totalColor = 8;
 
 	const { data, isLoading } = useQuery({
-		queryKey: ["WordPack", "public"],
+		queryKey: publicWordPackKey(),
 		queryFn: getPublicPacks,
 		staleTime: Infinity,
 		retry: (count) => {

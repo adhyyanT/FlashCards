@@ -38,6 +38,16 @@ export const router = createBrowserRouter([
 						<EditWordPack />
 					</HomePageLayout>
 				),
+				children: [
+					{
+						path: "/edit/:wordPackId",
+						element: (
+							<HomePageLayout>
+								<EditWordPack />
+							</HomePageLayout>
+						),
+					},
+				],
 			},
 			{
 				path: "/explore",

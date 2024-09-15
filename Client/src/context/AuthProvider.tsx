@@ -21,7 +21,7 @@ const initialState: AuthProviderState = {
 	user: undefined,
 	setUser: () => null,
 	isLoggedIn: false,
-	isLoading: false,
+	isLoading: true,
 	fetchUser: false,
 };
 
@@ -35,7 +35,7 @@ const AuthProvider = ({ children, ...props }: AuthProviderProps) => {
 		fetchUser: boolean;
 	}>({
 		isLoggedIn: false,
-		isLoading: false,
+		isLoading: true,
 		fetchUser: true,
 	});
 

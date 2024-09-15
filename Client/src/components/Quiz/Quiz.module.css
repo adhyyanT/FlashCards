@@ -41,3 +41,28 @@
 .showCard {
 	display: block !important;
 }
+.homeHeader {
+	display: flex;
+	flex-direction: column;
+	padding: 1.5rem 2rem 0 2rem;
+	height: 100%;
+	gap: 3rem;
+	overflow-x: hidden;
+}
+.contentArea {
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr;
+	@media (max-width: 1162px) {
+		grid-template-columns: 1fr 1fr;
+	}
+	@media (max-width: 600px) {
+		grid-template-columns: 1fr;
+	}
+}
+.editBtn {
+	padding: unset !important;
+	padding: 1.25rem 0.75rem 1.25rem 0.75rem !important;
+}
+.dialogContainer {
+	width: 90% !important;
+}

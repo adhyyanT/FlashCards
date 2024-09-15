@@ -21,10 +21,15 @@ import {
 import { useState } from "react";
 import { Button } from "../../ui/button";
 import styles from "./Sidebar.module.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { logout } from "@/api/AuthApis";
+import { useMutation } from "@tanstack/react-query";
+import { useAuth } from "@/context/AuthProvider";
 
 export default function Sidebar() {
 	const [isExpanded, setIsExpanded] = useState(true);
+	const navigate = useNavigate();
+	const auth = useAuth();
 
 	const sidebarItems = [
 		{
@@ -32,21 +37,45 @@ export default function Sidebar() {
 			icon: <House size={"30px"} />,
 			redirect: "/home",
 			id: 1,
+			onClick: () => {},
 		},
 		{
 			name: "Explore",
 			icon: <Compass size={"30px"} />,
 			redirect: "/explore",
 			id: 2,
+			onClick: () => {},
 		},
 		{
 			name: "Sign out",
 			icon: <LogOut size={"30px"} />,
 			redirect: "/home",
 			id: 3,
+			onClick: () => {
+				auth.setUser({
+					isLoggedIn: auth.isLoggedIn,
+					user: auth.user,
+					isLoading: true,
+					fetchUser: false,
+				});
+				logOutMutation.mutate();
+			},
 		},
 	];
-
+	const logOutMutation = useMutation({
+		mutationFn: logout,
+		onError: (e) => {
+			console.log(e);
+		},
+		onSuccess: () => {
+			auth.setUser({
+				isLoggedIn: false,
+				user: undefined,
+				isLoading: false,
+				fetchUser: false,
+			});
+		},
+	});
 	return (
 		<>
 			<Drawer>
@@ -77,6 +106,7 @@ export default function Sidebar() {
 									key={item.id}
 									className="flex gap-6 justify-center"
 									to={item.redirect}
+									onClick={item.onClick}
 								>
 									<DrawerClose
 										className="flex gap-6 justify-center"
@@ -99,7 +129,7 @@ export default function Sidebar() {
 				)}
 			>
 				<div className={classNames(styles.sidebarBtnContainer)}>
-					<div className={"flex justify-center"}>
+					<div onClick={() => navigate("/")} className={"flex justify-center"}>
 						<Button variant={"link"} className="flex gap-4">
 							<div>
 								<Zap size={"40px"} />
@@ -125,6 +155,7 @@ export default function Sidebar() {
 								<div key={index} className="w-full">
 									<Link className="w-full" to={item.redirect}>
 										<Button
+											onClick={item.onClick}
 											variant={"ghost"}
 											className={classNames(
 												`${styles.sidebarBtn} ${

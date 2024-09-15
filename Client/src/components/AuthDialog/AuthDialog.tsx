@@ -27,9 +27,10 @@ import { useAuth } from "@/context/AuthProvider";
 import { RegisterRequest } from "@/types/AuthTypes";
 import { Gender } from "@/types/gender";
 import { Zap } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { LoadingSpinner } from "../Shared/Spinner/LoadingSpinner";
 import styles from "./AuthDialog.module.css";
+import { authKey } from "@/utils/queryKeys";
 
 const loginFormSchema = z.object({
 	email: z.string().trim().toLowerCase().email(),
@@ -57,10 +58,9 @@ const registerFormSchema = z
 export const AuthDialog = () => {
 	const abort = new AbortController();
 	const auth = useAuth();
-	// const [initialRender, setInitialRender] = useState(true);
 
 	const loginMutation = useMutation({
-		mutationKey: ["auth", "login"],
+		mutationKey: authKey(),
 		mutationFn: (credentials: z.infer<typeof loginFormSchema>) => {
 			return login(credentials.email, credentials.password, abort);
 		},
@@ -70,7 +70,7 @@ export const AuthDialog = () => {
 					isLoggedIn: true,
 					user: response.data,
 					isLoading: false,
-					fetchUser: auth.fetchUser,
+					fetchUser: false,
 				});
 			} else {
 				if (!auth.fetchUser) {
@@ -137,8 +137,8 @@ export const AuthDialog = () => {
 		if (!auth.user && auth.fetchUser) {
 			auth.setUser({
 				isLoading: true,
-				isLoggedIn: auth.isLoading,
-				user: auth.user,
+				isLoggedIn: false,
+				user: undefined,
 				fetchUser: true,
 			});
 			loginMutation.mutate({ email: "local@local.com", password: "local" });

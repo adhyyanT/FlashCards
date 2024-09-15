@@ -8,11 +8,11 @@ import {
 import { useAuth } from "@/context/AuthProvider";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import classNames from "classnames";
+import { useNavigate } from "react-router-dom";
 import { AuthDialog } from "../AuthDialog/AuthDialog";
 import { useTheme } from "../theme-provider";
 import styles from "./AddToWordPack.module.css";
-import { useNavigate } from "react-router-dom";
-import { LoadingSpinner } from "../Shared/Spinner/LoadingSpinner";
+import { userWordPackKey } from "@/utils/queryKeys";
 
 type AddToWordPackProps = {
 	title: string;
@@ -36,9 +36,8 @@ const AddToWordPack = ({
 	const { isPending, mutate } = useMutation({
 		mutationFn: cloneWordPack,
 		onSuccess: (res) => {
-			console.log(res);
 			if (res.status) {
-				queryClient.invalidateQueries({ queryKey: ["WordPack", "user"] });
+				queryClient.invalidateQueries({ queryKey: userWordPackKey() });
 				navigate("/home");
 			}
 		},
