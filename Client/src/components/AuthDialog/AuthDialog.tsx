@@ -26,11 +26,10 @@ import {
 import { useAuth } from "@/context/AuthProvider";
 import { RegisterRequest } from "@/types/AuthTypes";
 import { Gender } from "@/types/gender";
+import { authKey } from "@/utils/queryKeys";
 import { Zap } from "lucide-react";
-import { useEffect } from "react";
 import { LoadingSpinner } from "../Shared/Spinner/LoadingSpinner";
 import styles from "./AuthDialog.module.css";
-import { authKey } from "@/utils/queryKeys";
 
 const loginFormSchema = z.object({
 	email: z.string().trim().toLowerCase().email(),
@@ -73,10 +72,8 @@ export const AuthDialog = () => {
 					fetchUser: false,
 				});
 			} else {
-				if (!auth.fetchUser) {
-					loginForm.setError("email", { message: response.data.error });
-					loginForm.setError("password", { message: response.data.error });
-				}
+				loginForm.setError("email", { message: response.data.error });
+				loginForm.setError("password", { message: response.data.error });
 				auth.setUser({
 					isLoggedIn: false,
 					user: undefined,
@@ -133,21 +130,6 @@ export const AuthDialog = () => {
 		},
 	});
 
-	useEffect(() => {
-		if (!auth.user && auth.fetchUser) {
-			auth.setUser({
-				isLoading: true,
-				isLoggedIn: false,
-				user: undefined,
-				fetchUser: true,
-			});
-			loginMutation.mutate({ email: "local@local.com", password: "local" });
-		}
-		return () => {
-			abort.abort();
-		};
-	}, []);
-
 	const handleLogin = (form: z.infer<typeof loginFormSchema>) => {
 		auth.setUser({
 			isLoading: true,
@@ -173,9 +155,13 @@ export const AuthDialog = () => {
 	};
 	return (
 		<Dialog>
-			<DialogTrigger asChild disabled={loginMutation.isPending}>
+			<DialogTrigger
+				asChild
+				disabled={loginMutation.isPending || auth.isLoading}
+			>
 				<Button variant={"outline"}>
-					Sign In {loginMutation.isPending && <LoadingSpinner />}
+					Sign In{" "}
+					{(loginMutation.isPending || auth.isLoading) && <LoadingSpinner />}
 				</Button>
 			</DialogTrigger>
 

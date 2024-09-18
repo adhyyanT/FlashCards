@@ -67,7 +67,11 @@ export default function Home() {
 	}
 
 	return (
-		<Page icon={<BookOpenText size={30} />} title={title} className="gap-4">
+		<Page
+			icon={<BookOpenText size={30} />}
+			title={title}
+			className="gap-4 py-4"
+		>
 			{wordPacks.map((d, index) => {
 				return (
 					<Link

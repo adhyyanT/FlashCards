@@ -1,7 +1,10 @@
+import { login } from "@/api/AuthApis";
 import { Auth } from "@/types/AuthTypes";
-import { createContext, useContext, useState } from "react";
+import { authKey } from "@/utils/queryKeys";
+import { useMutation } from "@tanstack/react-query";
+import { createContext, useContext, useEffect, useState } from "react";
 
-type AuthProviderState = {
+type AuthContextState = {
 	user?: Auth;
 	setUser: (user: {
 		user?: Auth;
@@ -13,48 +16,84 @@ type AuthProviderState = {
 	isLoading: boolean;
 	fetchUser: boolean;
 };
-
+type AuthProviderState = {
+	user?: Auth;
+	isLoggedIn: boolean;
+	isLoading: boolean;
+	fetchUser: boolean;
+};
 type AuthProviderProps = {
 	children: React.ReactNode;
 };
 const initialState: AuthProviderState = {
 	user: undefined,
-	setUser: () => null,
 	isLoggedIn: false,
 	isLoading: true,
 	fetchUser: false,
 };
 
-const AuthProviderContext = createContext<AuthProviderState>(initialState);
+const AuthProviderContext = createContext<AuthContextState>({
+	...initialState,
+	setUser: () => null,
+});
 
 const AuthProvider = ({ children, ...props }: AuthProviderProps) => {
-	const [user, setUser] = useState<{
-		user?: Auth;
-		isLoggedIn: boolean;
-		isLoading: boolean;
-		fetchUser: boolean;
-	}>({
-		isLoggedIn: false,
-		isLoading: true,
-		fetchUser: true,
+	const [user, setUser] = useState<AuthProviderState>(initialState);
+	const abort = new AbortController();
+
+	const loginMutation = useMutation({
+		mutationKey: authKey(),
+		mutationFn: () => {
+			return login("local@local.com", "local", abort);
+		},
+		onSuccess: (response) => {
+			if (response.status) {
+				setUser({
+					isLoggedIn: true,
+					user: response.data,
+					isLoading: false,
+					fetchUser: false,
+				});
+			} else {
+				setUser({
+					isLoggedIn: false,
+					user: undefined,
+					isLoading: false,
+					fetchUser: false,
+				});
+			}
+		},
+		onError: (e) => {
+			console.log(e);
+		},
 	});
+
+	useEffect(() => {
+		if (!user.isLoggedIn) {
+			setUser({
+				isLoggedIn: false,
+				user: user.user,
+				isLoading: true,
+				fetchUser: false,
+			});
+			loginMutation.mutate();
+		}
+		return () => {
+			abort.abort();
+		};
+	}, []);
 
 	const value: AuthProviderState = {
 		fetchUser: user.fetchUser,
 		user: user.user,
-		setUser: (val: {
-			user?: Auth;
-			isLoggedIn: boolean;
-			isLoading: boolean;
-			fetchUser: boolean;
-		}) => {
-			setUser(val);
-		},
 		isLoggedIn: user.isLoggedIn,
 		isLoading: user.isLoading,
 	};
 	return (
-		<AuthProviderContext.Provider {...props} value={value}>
+		<AuthProviderContext.Provider
+			{...props}
+			value={{ ...value, setUser: setUser }}
+		>
 			{children}
 		</AuthProviderContext.Provider>
 	);

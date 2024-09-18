@@ -93,7 +93,7 @@ const Quiz = () => {
 		}
 	}, [auth.user, data]);
 
-	if (isLoading) {
+	if (isLoading || auth.isLoading) {
 		return <div>Loading</div>;
 	}
 

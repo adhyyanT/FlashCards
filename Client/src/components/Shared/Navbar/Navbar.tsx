@@ -57,7 +57,7 @@ export default function Navbar() {
 	return (
 		<div className={styles.container}>
 			<div className={styles.title}>{title}</div>
-			<div>
+			<nav>
 				{auth.isLoggedIn ? (
 					<DropdownMenu>
 						<DropdownMenuTrigger>
@@ -83,7 +83,7 @@ export default function Navbar() {
 				) : (
 					<AuthDialog />
 				)}
-			</div>
+			</nav>
 		</div>
 	);
 }
