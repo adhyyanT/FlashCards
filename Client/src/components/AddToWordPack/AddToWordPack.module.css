@@ -7,13 +7,19 @@
 .cardContainer {
 	min-height: 300px;
 	min-width: 300px;
-
 	border-radius: 10px;
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	animation: cardSpin 1s ease-in-out 1s;
 	transform-style: preserve-3d;
+}
+.title {
+	backface-visibility: hidden;
+	-webkit-backface-visibility: hidden;
+
+	/* Firefox bug related to backface visibility */
+	transform: rotateX(0deg);
 }
 @keyframes cardSpin {
 	to {

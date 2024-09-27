@@ -60,7 +60,7 @@ const AddToWordPack = ({
 			<DialogHeader>
 				<div className={styles.dialogContainer}>
 					<div className={classNames(styles.cardContainer, styles[colorClass])}>
-						<p style={{ backfaceVisibility: "hidden" }}>{title}</p>
+						<p className={styles.title}>{title}</p>
 					</div>
 					<div className={styles.btnContainer}>
 						<p className={styles.author}>Author: {createdBy}</p>

@@ -32,6 +32,7 @@ import { z } from "zod";
 import { Textarea } from "../ui/textarea";
 import styles from "./EditWordPack.module.css";
 import { WordPack } from "@/types/wordPack";
+import Loading from "../Shared/Loading/Loading";
 
 const wordPackDetails = z.object({
 	word: z
@@ -180,7 +181,7 @@ const EditWordPack = () => {
 	};
 
 	if (isLoading) {
-		return <div>Loading word packs details ...</div>;
+		return <Loading />;
 	}
 
 	return (

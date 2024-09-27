@@ -10,6 +10,7 @@ import { Page } from "../Shared/Page/Page";
 import { useEffect, useState } from "react";
 import { WordPack } from "@/types/wordPack";
 import { userWordPackKey } from "@/utils/queryKeys";
+import Loading from "../Shared/Loading/Loading";
 
 export default function Home() {
 	const title = "My Library";
@@ -42,11 +43,8 @@ export default function Home() {
 		}
 	}, [data]);
 
-	if (auth.isLoading) {
-		return <div>Loading</div>;
-	}
-	if (isLoading || isRefetching) {
-		return <div>Loading your library</div>;
+	if (auth.isLoading || isLoading || isRefetching) {
+		return <Loading />;
 	}
 
 	if (!auth.isLoggedIn) {

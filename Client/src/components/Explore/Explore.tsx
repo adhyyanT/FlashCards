@@ -7,6 +7,7 @@ import { Page } from "../Shared/Page/Page";
 import { Dialog, DialogTrigger } from "../ui/dialog";
 import styles from "./Explore.module.css";
 import { publicWordPackKey } from "@/utils/queryKeys";
+import Loading from "../Shared/Loading/Loading";
 
 const Explore = () => {
 	const title = "Explore";
@@ -22,7 +23,7 @@ const Explore = () => {
 	});
 
 	if (isLoading) {
-		return <div>Loading packs</div>;
+		return <Loading />;
 	}
 	if (!data) return <h1>err</h1>;
 	if (!data.status) {

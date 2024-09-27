@@ -35,6 +35,7 @@ import {
 	DialogTrigger,
 } from "@/components/ui/dialog";
 import { LoadingSpinner } from "../Shared/Spinner/LoadingSpinner";
+import Loading from "../Shared/Loading/Loading";
 
 const Quiz = () => {
 	const title = "Quiz";
@@ -94,7 +95,7 @@ const Quiz = () => {
 	}, [auth.user, data]);
 
 	if (isLoading || auth.isLoading) {
-		return <div>Loading</div>;
+		return <Loading />;
 	}
 
 	if (!data) {
